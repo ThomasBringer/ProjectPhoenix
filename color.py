@@ -1,10 +1,5 @@
 class Color:
 
-    # r = 0
-    # g = 0
-    # b = 0
-    # a = 1
-
     def __init__(self, r=0, g=0, b=0, a=1):
         self.r = r
         self.g = g
@@ -12,8 +7,7 @@ class Color:
         self.a = a
 
     def __add__(c, d): return Color(c.r+d.r, c.g+d.g, c.b+d.b, c.a+d.a)
-    #def __neg__(c): return Color(-c.r, -c.g, -c.b, -c.a)
-    #def __sub__(c, d): return c+-d
+
     def __mul__(c, d): return Color(c.r*d.r, c.g*d.g, c.b*d.b, c.a*d.a)
     def __truediv__(c, d): return Color(c.r/d.r, c.g/d.g, c.b/d.b, c.a/d.a)
 

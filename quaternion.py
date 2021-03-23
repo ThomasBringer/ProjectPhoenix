@@ -1,15 +1,10 @@
 from vector3 import *
-from matrix2x2 import *
+# from matrix2x2 import *
 
 
 class Quaternion:
 
     # q = w + ix + jy + kz
-
-    # w = 1
-    # x = 0
-    # y = 0
-    # z = 0
 
     def __init__(self, w=1, x=0, y=0, z=0):
         self.w = w
@@ -27,6 +22,8 @@ class Quaternion:
         return a.w, a.toOnlyVectorial()
 
     def eulerToQuaternion(euler):
+        print(euler)
+        print(euler.x, euler.y, euler.z)
         return Quaternion.angleAxis(euler.z, Vector3.up)*Quaternion.angleAxis(euler.y, Vector3.forward)*Quaternion.angleAxis(euler.x, Vector3.right)
 
     def conjugate(a):
@@ -62,35 +59,17 @@ class Quaternion:
 
     def angleAxis(angle, axis):
         semiAngle = angle*.5
+        print("axis normalized: ", axis.normalized())
         return Quaternion.fromVectorial(np.cos(semiAngle), axis.normalized()*np.sin(semiAngle))
 
     def rotated(self, b):
         return b*self
 
-    # def angleAxisComposer(angle, axis):
-    #     semiAngle=angle*.5
-    #     return Quaternion.fromVectorial(np.cos(semiAngle),axis.normalized()*np.sin(semiAngle))
-
-    # def angleAxis(point,angle,axis):
-    #     return Quaternion.angleAxisComposer(angle,axis)).toOnlyVectorial()
-
-    # def pointAngleAxis(point,angle,axis):
-    #    return Quaternion.compose(Quaternion.fromVectorial(0,point),Quaternion.angleAxisComposer(angle,axis)).toOnlyVectorial()
-
-    def complexRep(a):
-        return Matrix2x2.U*a.w + Matrix2x2.I*a.x + Matrix2x2.J*a.y + Matrix2x2.K*a.z
+    # def complexRep(a):
+    #     return Matrix2x2.U*a.w + Matrix2x2.I*a.x + Matrix2x2.J*a.y + Matrix2x2.K*a.z
 
     def __str__(self):
         return "Quaternion(w = "+str(self.w)+", x = " + str(self.x)+", y = "+str(self.y)+", z = "+str(self.z)+")"
 
 
-#Quaternion.zero = Quaternion(1, 0, 0, 0)
-
-someQuaternion = Quaternion(0.965472, -0.129223, -0.167752, -0.151738)
-
-# q = Quaternion.pointAngleAxis(Vector3.one,-np.pi*.25,Vector3.up)
-
-# p=Quaternion(0.965926,0,0,0.258819)
-# v=Quaternion.fromVectorial(0,Vector3.one)
-
-# print(Quaternion.compose(v,p))
+Quaternion.zero = Quaternion(1, 0, 0, 0)

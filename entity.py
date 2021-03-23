@@ -22,15 +22,7 @@ class Entity:
 
 boxTrans = Transform3(PosRotScale3(
     Vector3(0, 0, 0), Quaternion(), Vector3(1, 1, 1)), [], Transform3Master.Master)
-
-
 Box = Entity(boxTrans, [Mesh.Box])
-
-# Cube = Entity(Transform3(), [Mesh.Cube])
-
-Pyramid = Entity(Transform3(PosRotScale3(Vector3.up*.5, Quaternion(),
-                                         Vector3.one*.5), [], boxTrans), [Mesh.Pyramid])
-
-
-MainCamera = Entity(Transform3(
-    PosRotScale3(Vector3(0, 0, 0))), [Camera.Main])
+Pyramid = Entity(Transform3(PosRotScale3(
+    Vector3.up*.5, Quaternion(), Vector3.one*.5), [], boxTrans), [Mesh.Pyramid])
+MainCamera = Entity(Transform3(PosRotScale3(Vector3(0, 0, 0))), [Camera.Main])
