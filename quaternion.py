@@ -22,8 +22,8 @@ class Quaternion:
         return a.w, a.toOnlyVectorial()
 
     def eulerToQuaternion(euler):
-        print(euler)
-        print(euler.x, euler.y, euler.z)
+        # print(euler)
+        # print(euler.x, euler.y, euler.z)
         return Quaternion.angleAxis(euler.z, Vector3.up)*Quaternion.angleAxis(euler.y, Vector3.forward)*Quaternion.angleAxis(euler.x, Vector3.right)
 
     def conjugate(a):
@@ -59,7 +59,6 @@ class Quaternion:
 
     def angleAxis(angle, axis):
         semiAngle = angle*.5
-        print("axis normalized: ", axis.normalized())
         return Quaternion.fromVectorial(np.cos(semiAngle), axis.normalized()*np.sin(semiAngle))
 
     def rotated(self, b):

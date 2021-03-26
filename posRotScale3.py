@@ -21,6 +21,20 @@ class PosRotScale3:
             rot.rotated(parentRot),
             parentScale*scale)
 
+    def translate(self, pos):
+        self.position += pos
+
+    def rotate(self, rot):
+        self.rotation = self.rotation.rotated(rot)
+
+    def scalate(self, scale):
+        self.scale *= scale
+
+    def transRotScalate(self, posRotScale3):
+        self.translate(posRotScale3.position)
+        self.rotate(posRotScale3.rotation)
+        self.scalate(posRotScale3.scale)
+
     def __str__(self):
         return "PosRotScale3 of position " + str(self.position)+", rotation "+str(self.rotation)+", scale "+str(self.scale)
 

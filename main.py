@@ -1,4 +1,5 @@
 import pygame as pg
+import sys
 import numpy as np
 
 from camera import *
@@ -15,75 +16,79 @@ from vector2 import *
 from vector3 import *
 
 
+stateITRE = 0  # 0: idle, 1: translate, 2: rotate, 3: scalate
+stateAxis = Vector3()
+
+
 def main():
     pg.init()
     pg.display.set_caption("Project Phoenix")
 
-    inputCubeRotation = Vector3()
-    inputCubePosition = 0
-    inputPyramidRotation = 0
-    inputPyramidScale = 0
-
     while True:
-        for event in pg.event.get():
-
-            if event.type == pg.KEYDOWN:
-                if event.key == pg.K_LEFT:
-                    inputCubeRotation.y = -1
-                elif event.key == pg.K_RIGHT:
-                    inputCubeRotation.y = 1
-                if event.key == pg.K_DOWN:
-                    inputCubeRotation.x = -1
-                elif event.key == pg.K_UP:
-                    inputCubeRotation.x = 1
-                if event.key == pg.K_w:
-                    inputCubeRotation.z = -1
-                elif event.key == pg.K_x:
-                    inputCubeRotation.z = 1
-                if event.key == pg.K_q:
-                    inputPyramidRotation = -1
-                elif event.key == pg.K_s:
-                    inputPyramidRotation = 1
-                if event.key == pg.K_a:
-                    inputPyramidScale = -1
-                elif event.key == pg.K_z:
-                    inputPyramidScale = 1
-                if event.key == pg.K_c:
-                    inputCubePosition = -1
-                elif event.key == pg.K_v:
-                    inputCubePosition = 1
-            elif event.type == pg.KEYUP:
-                if event.key == pg.K_LEFT or event.key == pg.K_RIGHT:
-                    inputCubeRotation.y = 0
-                if event.key == pg.K_DOWN or event.key == pg.K_UP:
-                    inputCubeRotation.x = 0
-                if event.key == pg.K_w or event.key == pg.K_x:
-                    inputCubeRotation.z = 0
-                if event.key == pg.K_q or event.key == pg.K_s:
-                    inputPyramidRotation = 0
-                if event.key == pg.K_a or event.key == pg.K_z:
-                    inputPyramidScale = 0
-                if event.key == pg.K_c or event.key == pg.K_v:
-                    inputCubePosition = 0
-            if event.type == pg.QUIT:
-                pg.quit()
-
-        update(inputCubeRotation*.02, inputCubePosition*.02,
-               inputPyramidRotation*.02, inputPyramidScale*.02)
-
+        update()
         Camera.Main.render()
 
 
-def update(inputCubeRotation, inputCubePosition, inputPyramidRotation, inputPyramidScale):
-    Box.transform.localPosRotScale3.rotation = Box.transform.localPosRotScale3.rotation.rotated(
-        Quaternion.eulerToQuaternion(inputCubeRotation))
+def exit():
+    pg.display.quit()
+    pg.quit()
+    sys.exit()
 
-    Box.transform.localPosRotScale3.position += Vector3.right*inputCubePosition
 
-    Pyramid.transform.localPosRotScale3.rotation = Pyramid.transform.localPosRotScale3.rotation.rotated(
-        Quaternion.eulerToQuaternion(Vector3.up*inputPyramidRotation))
+def update():
 
-    Pyramid.transform.localPosRotScale3.scale += Vector3.one*inputPyramidScale
+    global stateITRE
+    global stateAxis
+
+    # print(stateITRE, "//", stateAxis)
+
+    for event in pg.event.get():
+        if event.type == pg.QUIT:
+            exit()
+
+        if event.type == pg.KEYDOWN:
+            if event.key == pg.K_ESCAPE:
+                exit()
+
+            if event.key == pg.K_RETURN or event.key == pg.K_TAB or event.key == pg.K_q or event.key == pg.K_z:
+                stateITRE = 0
+                stateAxis = Vector3()
+            if event.key == pg.K_t:
+                stateITRE = 1
+                stateAxis = Vector3()
+            if event.key == pg.K_r:
+                stateITRE = 2
+                stateAxis = Vector3()
+            if event.key == pg.K_e:
+                stateITRE = 3
+                stateAxis = Vector3(1, 1, 1)
+
+            if event.key == pg.K_x:
+                stateAxis.x = 1-stateAxis.x
+            if event.key == pg.K_y:
+                stateAxis.y = 1-stateAxis.y
+            if event.key == pg.K_w:
+                stateAxis.z = 1-stateAxis.z
+
+    leftClick, middleClick, rightClick = pg.mouse.get_pressed()
+    mouseDeltaPos = Vector(pg.mouse.get_rel()) * .005
+
+    if middleClick:
+
+        Transform3Master.Master.localPosRotScale3.rotate(Quaternion.eulerToQuaternion(
+            Vector3(-mouseDeltaPos.y, mouseDeltaPos.x, 0)))
+        return
+
+    selectedEntity = Pyramid
+    selectedPosRotScale = selectedEntity.transform.localPosRotScale3
+
+    if stateITRE == 1:
+        selectedPosRotScale.translate(stateAxis * mouseDeltaPos.x)
+    elif stateITRE == 2:
+        selectedPosRotScale.rotate(
+            Quaternion.eulerToQuaternion(stateAxis*mouseDeltaPos.x))
+    elif stateITRE == 3:
+        selectedPosRotScale.scalate(Vector3.one + stateAxis * mouseDeltaPos.x)
 
 
 main()

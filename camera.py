@@ -19,7 +19,7 @@ class Camera(Unit):
         self.segs = segs
         self.tris = tris
         self.backgroundColor = backgroundColor
-        self.screen = pg.display.set_mode(self.res.toTuple())
+        self.screen = pg.display.set_mode((0, 0), pg.FULLSCREEN)
         self.centre = self.res/2
         self.renderSize = orthoSize*res.y*.1
 
