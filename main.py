@@ -16,7 +16,7 @@ from vector2 import *
 from vector3 import *
 
 
-stateITRE = 0  # 0: idle, 1: translate, 2: rotate, 3: scalate
+stateITRS = 0  # 0: idle, 1: translate, 2: rotate, 3: scalate
 stateAxis = Vector3()
 
 
@@ -34,41 +34,64 @@ def exit():
     pg.quit()
     sys.exit()
 
+# def getMouse(event):
+#     return 0 if event.type!=pg.MOUSEBUTTONDOWN else event.button
+
 
 def update():
 
-    global stateITRE
+    global stateITRS
     global stateAxis
 
     # print(stateITRE, "//", stateAxis)
 
+    selectedEntity = Pyramid
+    selectedPosRotScale = selectedEntity.transform.localPosRotScale3
+
     for event in pg.event.get():
         if event.type == pg.QUIT:
             exit()
+
+        if event.type == pg.MOUSEBUTTONDOWN:
+            mouse = event.button
+            if mouse == 1 or mouse == 3:
+                stateITRS = 0
+                stateAxis = Vector3()
 
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_ESCAPE:
                 exit()
 
             if event.key == pg.K_RETURN or event.key == pg.K_TAB or event.key == pg.K_q or event.key == pg.K_z:
-                stateITRE = 0
+                stateITRS = 0
                 stateAxis = Vector3()
             if event.key == pg.K_t:
-                stateITRE = 1
+                stateITRS = 1
                 stateAxis = Vector3()
             if event.key == pg.K_r:
-                stateITRE = 2
+                stateITRS = 2
                 stateAxis = Vector3()
-            if event.key == pg.K_e:
-                stateITRE = 3
+            if event.key == pg.K_s:
+                stateITRS = 3
                 stateAxis = Vector3(1, 1, 1)
 
             if event.key == pg.K_x:
-                stateAxis.x = 1-stateAxis.x
+                stateAxis = Vector3.right
             if event.key == pg.K_y:
-                stateAxis.y = 1-stateAxis.y
+                stateAxis = Vector3.forward
             if event.key == pg.K_w:
-                stateAxis.z = 1-stateAxis.z
+                stateAxis = Vector3.up
+            if event.key == pg.K_KP0:
+                if stateITRS == 1:
+                    selectedPosRotScale.position = Vector3()
+                elif stateITRS == 2:
+                    selectedPosRotScale.rotation = Quaternion()
+                elif stateITRS == 3:
+                    selectedPosRotScale.scale = Vector3(1, 1, 1)
+                if stateITRS != 0:
+                    stateITRS = 0
+            if event.key == pg.K_KP5:
+                Camera.Main.perspective = not Camera.Main.perspective
 
     leftClick, middleClick, rightClick = pg.mouse.get_pressed()
     mouseDeltaPos = Vector(pg.mouse.get_rel()) * .005
@@ -79,15 +102,12 @@ def update():
             Vector3(-mouseDeltaPos.y, mouseDeltaPos.x, 0)))
         return
 
-    selectedEntity = Pyramid
-    selectedPosRotScale = selectedEntity.transform.localPosRotScale3
-
-    if stateITRE == 1:
+    if stateITRS == 1:
         selectedPosRotScale.translate(stateAxis * mouseDeltaPos.x)
-    elif stateITRE == 2:
+    elif stateITRS == 2:
         selectedPosRotScale.rotate(
             Quaternion.eulerToQuaternion(stateAxis*mouseDeltaPos.x))
-    elif stateITRE == 3:
+    elif stateITRS == 3:
         selectedPosRotScale.scalate(Vector3.one + stateAxis * mouseDeltaPos.x)
 
 
