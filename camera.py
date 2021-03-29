@@ -20,11 +20,31 @@ class Camera(Unit):
         self.tris = tris
         self.backgroundColor = backgroundColor
         self.screen = pg.display.set_mode((0, 0), pg.FULLSCREEN)
-        self.centre = self.res/2
-        self.renderSize = orthoSize*res.y*.1
 
-    def ratio(self):
-        return self.res.x/self.res.y
+    @property
+    def persScaler(self): return self._persScaler
+
+    @persScaler.setter
+    def persScaler(self, value):
+        if 0 <= value:
+            self._persScaler = value
+
+    @property
+    def orthoSize(self): return self._orthoSize
+
+    @orthoSize.setter
+    def orthoSize(self, value):
+        if 0 <= value:
+            self._orthoSize = value
+
+    @property
+    def ratio(self): return self.res.x/self.res.y
+
+    @property
+    def centre(self): return self.res/2
+
+    @property
+    def renderSize(self): return self.orthoSize*self.res.y*.1
 
     def render(self):
         self.screen.fill(self.backgroundColor.toTuple())

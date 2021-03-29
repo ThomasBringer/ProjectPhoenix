@@ -34,9 +34,6 @@ def exit():
     pg.quit()
     sys.exit()
 
-# def getMouse(event):
-#     return 0 if event.type!=pg.MOUSEBUTTONDOWN else event.button
-
 
 def update():
 
@@ -57,6 +54,15 @@ def update():
             if mouse == 1 or mouse == 3:
                 stateITRS = 0
                 stateAxis = Vector3()
+            elif mouse == 4 or mouse == 5:
+                scroll = 1 if mouse == 4 else -1 if mouse == 5 else 0
+                pressed = pg.key.get_pressed()
+                shift = pressed[pg.K_RSHIFT] or pressed[pg.K_LSHIFT]
+                if shift:
+                    if Camera.Main.perspective:
+                        Camera.Main.persScaler -= scroll*.05
+                else:
+                    Camera.Main.orthoSize *= 1+scroll*.1
 
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_ESCAPE:
