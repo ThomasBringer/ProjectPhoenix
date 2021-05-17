@@ -30,7 +30,7 @@ class Vector(object):
 
     def __add__(a, b): return Vector(sumByTerm([a.c, b.c]))
     def __neg__(a): return Vector(multTerms(-1, a.c))
-    def __sub__(a, b): return a+-b
+    def __sub__(a, b): return a + -b
 
     def __mul__(a, b):
         if isinstance(b, Vector):
@@ -42,19 +42,28 @@ class Vector(object):
         if isinstance(b, Vector):
             return Vector(multByTerm([a.c, invTerms(b.c)]))
         elif isinstance(b, int) or isinstance(b, float):
-            return Vector(multTerms(1/b, a.c))
+            return Vector(multTerms(1 / b, a.c))
 
+    def __eq__(a, b):
+        return a.c == b.c
+
+    def __ne__(a, b):
+        return not a == b
+
+    @property
     def sqrModule(a):
         return sum([k**2 for k in a.c])
 
+    @property
     def module(a):
-        return np.sqrt(a.sqrModule())
+        return np.sqrt(a.sqrModule)
 
     # def distance(a, b):
     #     return module(a-b)
 
+    @property
     def normalized(a):
-        return a/a.module()
+        return a / a.module
 
     def toVector2(a):
         return Vector([a.x, a.y])
@@ -66,4 +75,4 @@ class Vector(object):
         return tuple(self.c)
 
     def __str__(self):
-        return "Vector of coordinates("+str([str(k) for k in self.c])+")"
+        return "Vector of coordinates(" + str([str(k) for k in self.c]) + ")"

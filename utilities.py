@@ -11,7 +11,7 @@ def joinLists(lists):
 def sumByTerm(lists):
     l = len(lists)
     ls = len(lists[0])
-    sum = [0]*ls
+    sum = [0] * ls
 
     for i in range(l):
         for j in range(ls):
@@ -28,20 +28,23 @@ def sum(list):
 
 
 def multTerms(mult, list):
-    return [mult*k for k in list]
+    return [mult * k for k in list]
 
 
 def invTerms(list):
-    return [1/k for k in list]
+    return [1 / k for k in list]
 
 
 def multByTerm(lists):
     l = len(lists)
     ls = len(lists[0])
-    mult = [1]*ls
+    mult = [1] * ls
 
     for i in range(l):
         for j in range(ls):
             mult[j] *= lists[i][j]
 
     return mult
+
+
+map = lambda f, l: [f(k) for k in l]
