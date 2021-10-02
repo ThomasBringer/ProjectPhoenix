@@ -1,5 +1,4 @@
-from vector3 import *
-from quaternion import *
+from space import *
 from unit import *
 
 
@@ -11,7 +10,7 @@ class PosRotScale3:
         self.scale = scale
 
     def relativePos(pos, parentPosRotScale3):
-        return parentPosRotScale3.rotation.rotatedPoint(pos*parentPosRotScale3.scale)+parentPosRotScale3.position
+        return parentPosRotScale3.rotation.rotatedPoint(pos * parentPosRotScale3.scale) + parentPosRotScale3.position
 
     def relative(localPosRotScale3, parentPosRotScale3):
         parentPos, parentRot, parentScale = parentPosRotScale3.position, parentPosRotScale3.rotation, parentPosRotScale3.scale
@@ -19,7 +18,7 @@ class PosRotScale3:
         return PosRotScale3(
             PosRotScale3.relativePos(pos, parentPosRotScale3),
             rot.rotated(parentRot),
-            parentScale*scale)
+            parentScale * scale)
 
     def translate(self, pos):
         self.position += pos
@@ -36,7 +35,7 @@ class PosRotScale3:
         self.scalate(posRotScale3.scale)
 
     def __str__(self):
-        return "PosRotScale3 of position " + str(self.position)+", rotation "+str(self.rotation)+", scale "+str(self.scale)
+        return "PosRotScale3 of position " + str(self.position) + ", rotation " + str(self.rotation) + ", scale " + str(self.scale)
 
 
 PosRotScale3.zero = PosRotScale3()

@@ -4,16 +4,14 @@ import numpy as np
 
 from camera import *
 from color import *
-from entity import *
+from simulations import *
 from matrix2x2 import *
 from mesh import *
-from quaternion import *
 # from segment2 import *
 # from segment3 import *
 from transform3 import *
 from unit import *
-from vector2 import *
-from vector3 import *
+from space import *
 from clock import *
 from physics import *
 
@@ -87,7 +85,7 @@ def inputUpdate():
                 # shift = pressed[pg.K_RSHIFT] or pressed[pg.K_LSHIFT]
                 if shift:
                     if Camera.Main.perspective:
-                        Camera.Main.persScaler -= scroll * .05
+                        Camera.Main.persScaler -= scroll * .025
                 else:
                     Camera.Main.orthoSize *= 1 + scroll * .1
 
@@ -129,9 +127,16 @@ def inputUpdate():
                 Camera.Main.perspective = not Camera.Main.perspective
             if event.key == pg.K_KP8:
                 Transform3Master.Master.localPosRotScale3.rotation.localUp = -Vector3.forward
+            if event.key == pg.K_KP1:
+                Transform3Master.Master.localPosRotScale3.rotation = Quaternion(
+                    0.707107, Vector3(0, 0, 0.707107))
+            if event.key == pg.K_KP3:
+                Transform3Master.Master.localPosRotScale3.rotation.localForward = -Vector3.forward
+            if event.key == pg.K_KP7:
+                Transform3Master.Master.localPosRotScale3.rotation.localUp = -Vector3.forward
 
     leftClick, middleClick, rightClick = pg.mouse.get_pressed()
-    mouseDeltaPos = Vector(pg.mouse.get_rel()) * .005
+    mouseDeltaPos = Vector2(pg.mouse.get_rel()) * .005
 
     if middleClick or alt:
 

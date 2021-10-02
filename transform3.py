@@ -16,6 +16,7 @@ class Transform3Master(Unit):
         self.children.append(newChild)
         self.children[-1].parent = self
 
+    @property
     def globalPosRotScale3(self): return self.localPosRotScale3
 
     def __str__(self):
@@ -35,8 +36,9 @@ class Transform3(Transform3Master):
     def setParent(self, newParent=Transform3Master.Master):
         newParent.addChild(self)
 
+    @property
     def globalPosRotScale3(self):
-        return self.localPosRotScale3.relative(self.parent.globalPosRotScale3())
+        return self.localPosRotScale3.relative(self.parent.globalPosRotScale3)
 
     def __str__(self):
         return "Transform3 of local "+str(self.localPosRotScale3) + " with "+str(len(self.children)) + " children"

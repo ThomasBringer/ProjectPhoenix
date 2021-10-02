@@ -11,7 +11,7 @@ class MeshRenderer(Unit):
         self.mesh = mesh
 
     def globalPoints(self):
-        return [PosRotScale3.relativePos(point, self.transform.globalPosRotScale3()) for point in self.mesh.points]
+        return [PosRotScale3.relativePos(point, self.transform.globalPosRotScale3) for point in self.mesh.points]
 
     def __str__(self):
         return "Renderer of " + str(self.mesh)
