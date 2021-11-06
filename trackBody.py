@@ -11,130 +11,126 @@ import matplotlib.pyplot as plt
 
 
 class TrackBody(UpdatableUnit):
-    def __init__(self, track, speedVectorRenderer, accelerationVectorRenderer):
+
+    def __init__(self, track, speedVectorRenderer, accelerationVectorRenderer, gForceVectorRenderer):
         self.track = track
         self.speedVectorRenderer = speedVectorRenderer
         self.accelerationVectorRenderer = accelerationVectorRenderer
-        self.t = track.tStart
+        self.gForceVectorRenderer = gForceVectorRenderer
+        self.d = 0
         self.heightVar = 0
-        self.lastSpeedVector = Vector3.forward*.0001
+        self.lastSpeedVector = Vector3.forward * .0001
         self.originalHeight = track.start.z
         self.speeds = []
         self.accelerations = []
+        self.gForces = []
         self.lastDeltaTime = deltaTime()
-#         self.transform.posRotScale3.position = track.points[0]
-#         self.originalHeight = self.transform.posRotScale3.position.z+1
 
-    # @property def tangentSpeed(self):
-    # return np.sqrt(2*g*(originalHeight-self.transform.localPosRotScale3.position.z))
+    # Uses conservation energy to compute speed, depending on the variation of height. v²=v_0^2 - 2g deltaH
 
-    # speed=lambda lastSpeed,heightVar:np.sqrt(lastSpeed**2 - 2 * g * self.heightVar)
+    def calcSqrSpeed(self):
+        # print("lastSqrSpeed", self.lastSpeedVector.sqrModule, "heightVar (before)",
+        #       self.heightVar, "...", self.lastSpeedVector.sqrModule - 2 * g * self.heightVar)
+        return self.lastSpeedVector.sqrModule - 2 * g * self.heightVar
+        # if self.heightVar < 0:
+        #     return np.sqrt(self.lastSpeedVector.sqrModule - 2 * g * self.heightVar)
+        # else:
+        #     return self.lastSpeedVector.module
 
-    def calcSpeed(self):
-        return np.sqrt(self.lastSpeedVector.sqrModule - 2 * g * self.heightVar)
-        # sqrSpeed = self.lastSpeed**2 - 2 * g * self.heightVar
-        # return np.sign(sqrSpeed) * np.sqrt(np.abs(sqrSpeed))
+    # Uses Menger Curvature to compute the radius or a circle, using three points on the circle. r=2sin(abc)/|a-c|
+    def mengerRadius(self, a, b, c):
+        # print("a", a, "b", b, "c", c)
+        s = Vector3.sinAngleBetween(a-b, c-b)
+        return 0 if s == 0 else Vector3.distance(a, c)/(2*s)
+        # return 2*(Vector3).sinAngleBetween(a-b, c-b)/Vector3.distance(a, c)
+
+    # def mengerCurvature(self, a, b, c):
+    #     r = self.mengerRadius(a, b, c)
+    #     return np.infty if r == 0 else 1/r
 
     def update(self):
+        a = self.getPos(self.D - 1)
+        b = self.getPos(self.D)
+        c = self.getPos(self.D + 1)
+        dt = deltaTime()
 
-        if self.T >= self.track.tEnd:
-            # ts = np.linspace(0, 1, len(self.speeds))
-            # plt.plot(ts, self.speeds)
-            # plt.plot(ts, self.accelerations)
-            # plt.show()
-            # exit()
-            return
+        dir = (c - b).normalized
+        tang = (a+c-b*2).normalized
+        # print("dir", dir)
 
-        dir = (self.getPos(self.T + .1) -
-               self.getPos(self.T)).normalized
-
-        speed = self.calcSpeed()
+        sqrSpeed = self.calcSqrSpeed()
+        speed = np.sqrt(sqrSpeed)
         speedVector = dir*speed
         self.speedVectorRenderer.vector = speedVector
 
-        dist = speed * deltaTime()
+        dist = speed * dt
+
+        # # # # # acceleration = (speed - self.lastSpeed) / self.lastDeltaTime
+
+        # a=v²/r
+        r = self.mengerRadius(a, b, c)
+        # print("r", r)
+        # print("tang", tang)
+        if r == 0:
+            acceleration = 0
+        else:
+            acceleration = sqrSpeed/r
+
+        # acceleration = 0 if r == 0 else sqrSpeed*self.mengerCurvature(a, b, c)
+        accelerationVector = tang * acceleration
+        # accelerationVector = (speedVector-self.lastSpeedVector)
+
+        self.accelerationVectorRenderer.vector = accelerationVector
+        gForce = gVect-accelerationVector
+        self.gForceVectorRenderer.vector = gForce
+
+        # print("gForce:", gVect-accelerationVector)
+        # print("gForceVector:", self.gForceVectorRenderer.vector)
+
+        # acceleration = accelerationVector.module
 
         self.speeds.append(speed)
-        # acceleration = (speed - self.lastSpeed) / self.lastDeltaTime
-
-        accelerationVector = (speedVector-self.lastSpeedVector)*5
-        self.accelerationVectorRenderer.vector = accelerationVector
-
-        acceleration = accelerationVector.module
-
         self.accelerations.append(acceleration)
-        self.lastDeltaTime = deltaTime()
+        self.gForces.append(gForce.module)
+        self.lastDeltaTime = dt
 
         self.heightVar = dir.z * dist
         self.lastSpeedVector = speedVector
 
-        self.T += dist
+        self.D += dist
+
+        # ,"", self.track.DistToT(dist))
+        # print("heightVar", self.heightVar, "speed", speed, "dist", dist)
+        # print("dist:", dist)
 
         self.transform.localPosRotScale3.rotation.localForward = dir
 
-    # def update(self):
+    @ property
+    def D(self):
+        return self.d
 
-    #     if self.T >= self.track.tEnd:
-    #         # ts = np.linspace(0, 1, len(self.speeds))
-    #         # plt.plot(ts, self.speeds)
-    #         # plt.plot(ts, self.accelerations)
-    #         # plt.show()
-    #         # exit()
-    #         return
+    @ D.setter
+    def D(self, value):
+        self.tryTerminate(value)
 
-    #     dir = (self.getPos(self.T + .1) -
-    #            self.getPos(self.T)).normalized
-    #     # dir = Vector3(dir.x, dir.x, dir.z)
-    #     # print(dir)
-
-    #     # dir = (self.getPos(self.T + .1) -
-    #     #        self.transform.localPosRotScale3.position).normalized
-
-    #     speed = self.calcSpeed()
-
-    #     # u = self.transform.localPosRotScale3.rotation.localForward
-    #     self.speedVectorRenderer.vector = dir*speed
-
-    #     # speed = np.sqrt(self.lastSpeed**2 - 2 * g * self.heightVar)
-    #     #print("heightVar", self.heightVar, "2 * g * heightVar", (2 * g * self.heightVar), "lastSpeed", self.lastSpeed, "speed", speed)
-    #     dist = speed * deltaTime()
-
-    #     self.speeds.append(speed)
-    #     # acceleration = (speed - self.lastSpeed) / self.lastDeltaTime
-    #     self.accelerations.append(acceleration)
-    #     self.lastDeltaTime = deltaTime()
-    #     # print(deltaTime())
-    #     self.heightVar = dir.z * dist
-    #     self.lastSpeed = speed
-    #     # print(speed)
-    #     self.T += dist
-
-    #     self.transform.localPosRotScale3.rotation.localForward = dir
-    #     # print(self.transform.localPosRotScale3.rotation.localForward)
-
-    #     # print(dir)
-    #     # print(self.transform.localPosRotScale3.rotation.localForward)
-
-    #     #print("clck0.get_time(): ", clck0.get_time())
-    #     # self.transform.localPosRotScale3.translate(dir * dist)
-
-    #     # dir = (self.track.end - self.track.start).normalized()
-    #     # dist = np.sqrt(2 * g * (self.originalHeight -
-    #     #                         self.transform.localPosRotScale3.position.z)) * time()
-    #     # # z=dir.z*dist
-    #     # self.T += dist
-
-    @property
-    def T(self): return self.t
-
-    @T.setter
-    def T(self, value):
         self.applyPos(value)
-        self.t = value
+        self.d = value
 
-    def getPos(self, t):
-        track = self.track
-        return Vector3(track.xt(t), track.yt(t), track.zt(t))
+    def getPos(self, d):
+        self.tryTerminate(d)
+        return self.track.FakeCurve(d)
 
-    def applyPos(self, t):
-        self.transform.localPosRotScale3.position = self.getPos(t)
+    def applyPos(self, d):
+        self.transform.localPosRotScale3.position = self.getPos(d)
+
+    def tryTerminate(self, dValue):
+        if dValue >= self.track.maxDist:
+            self.terminate()
+
+    def terminate(self):
+        ts = np.linspace(0, 1, len(self.speeds))
+        plt.plot(ts, self.speeds)
+        plt.plot(ts, self.accelerations)
+        plt.plot(ts, self.gForces)
+        plt.show()
+        exit()

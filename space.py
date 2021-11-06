@@ -1,4 +1,5 @@
 import numpy as np
+# from numpy.core.numeric import cross
 from utilities import *
 
 
@@ -58,12 +59,16 @@ class Vector(object):
     def module(a):
         return np.sqrt(a.sqrModule)
 
+    def distance(a, b):
+        return (a-b).module
+
     # def distance(a, b):
     #     return module(a-b)
 
     @property
     def normalized(a):
-        return a / a.module
+        m = a.module
+        return a if m == 0 else a / m
 
     @property
     def toVector2(a):
@@ -159,7 +164,17 @@ class Vector3(Vector):
                        a.z * b.x - a.x * b.z,
                        a.x * b.y - a.y * b.x)
 
-    @property
+    def sinAngleBetween(a, b):
+        # print("sinanglebetween", "a", a, "b", b)
+        # print("normalized", a.normalized, b.normalized)
+        # print("cross", Vector3.cross(a.normalized,
+        #                              b.normalized))
+        # print("cross module / sin", Vector3.cross(a.normalized,
+        #                                           b.normalized).module)
+        return Vector3.cross(a.normalized,
+                             b.normalized).module
+
+    @ property
     def toQuaternion(a):
         return Quaternion(0, a)
 
@@ -188,19 +203,19 @@ class Quaternion:
         # print(euler.x, euler.y, euler.z)
         return Quaternion.angleAxis(euler.z, Vector3.up) * Quaternion.angleAxis(euler.y, Vector3.forward) * Quaternion.angleAxis(euler.x, Vector3.right)
 
-    @property
+    @ property
     def conjugate(a):
         return Quaternion(a.w, -a.v)
 
-    @property
+    @ property
     def sqrModule(a):
         return a.w**2 + a.v.sqrModule
 
-    @property
+    @ property
     def module(a):
         return np.sqrt(a.sqrModule)
 
-    @property
+    @ property
     def normalized(a):
         return a / a.module
 
@@ -234,24 +249,24 @@ class Quaternion:
     def rotated(self, b):
         return b * self
 
-    @property
+    @ property
     def localRight(self): return self.rotatedPoint(Vector3.right)
 
-    @localRight.setter
+    @ localRight.setter
     def localRight(self, value):
         self.copy(Quaternion.fromToRotation(Vector3.right, value))
 
-    @property
+    @ property
     def localForward(self): return self.rotatedPoint(Vector3.forward)
 
-    @localForward.setter
+    @ localForward.setter
     def localForward(self, value):
         self.copy(Quaternion.fromToRotation(Vector3.forward, value))
 
-    @property
+    @ property
     def localUp(self): return self.rotatedPoint(Vector3.up)
 
-    @localUp.setter
+    @ localUp.setter
     def localUp(self, value):
         self.copy(Quaternion.fromToRotation(Vector3.up, value))
 

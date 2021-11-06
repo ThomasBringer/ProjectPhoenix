@@ -47,4 +47,15 @@ def multByTerm(lists):
     return mult
 
 
-map = lambda f, l: [f(k) for k in l]
+def map(f, l): return [f(k) for k in l]
+
+
+def avg(list): return sum(list)/len(list)
+
+
+def sumAndAvg(list):
+    s = sum(list)
+    return s, s/len(list)
+
+
+def clamp(x, smallest=0, largest=1): return max(smallest, min(x, largest))

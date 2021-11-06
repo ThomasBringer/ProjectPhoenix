@@ -35,7 +35,3 @@ def g(t): return 8 * np.sin(t * .25)
 
 
 Track.T01 = Track(g, const, f, -np.pi * 4, np.pi * 4)
-# Track.T02 = Track(zero, const, g, -np.pi * .5, np.pi * 3)
-
-# Track.T01 = Track([Vector3(0, -3, 3), Vector3(0, -2, 1.5), Vector3(0, -1, 1),
-#                    Vector3(0, 0, 0), Vector3(0, 1, -1.5), Vector3(0, 2, -2)])

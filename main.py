@@ -64,7 +64,7 @@ def inputUpdate():
     global stateAxis
     global paused
 
-    # print(stateITRE, "//", stateAxis)
+    # print(stateITRE, "//p", stateAxis)
 
     pressed = pg.key.get_pressed()
     alt = pressed[pg.K_LALT] or pressed[pg.K_RALT]
