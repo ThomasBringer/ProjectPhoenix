@@ -174,7 +174,7 @@ class Vector3(Vector):
         return Vector3.cross(a.normalized,
                              b.normalized).module
 
-    @ property
+    @property
     def toQuaternion(a):
         return Quaternion(0, a)
 
@@ -273,6 +273,63 @@ class Quaternion:
     # def complexRep(a):
     #     return Matrix2x2.U*a.w + Matrix2x2.I*a.x + Matrix2x2.J*a.y + Matrix2x2.K*a.z
 
+    def facing(forward, up):
+
+        up = up.normalized
+
+        v0 = up.normalized
+        v1 = (Vector3.cross(forward, v0)).normalized
+        v2 = Vector3.cross(v0, v1)
+        m00 = v1.x
+        m01 = v1.y
+        m02 = v1.z
+        m10 = v2.x
+        m11 = v2.y
+        m12 = v2.z
+        m20 = v0.x
+        m21 = v0.y
+        m22 = v0.z
+
+        num8 = (m00 + m11) + m22
+        q = Quaternion(0, Vector3(0, 0, 0))
+        if num8 > 0:
+            num = np.sqrt(num8 + 1)
+            q.w = num * .5
+            num = .5 / num
+            q.v.x = (m12 - m21) * num
+            q.v.y = (m20 - m02) * num
+            q.v.z = (m01 - m10) * num
+            return q
+
+        if ((m00 >= m11) and (m00 >= m22)):
+            num7 = np.sqrt(((1 + m00) - m11) - m22)
+            num4 = .5 / num7
+            q.v.x = .5 * num7
+            q.v.y = (m01 + m10) * num4
+            q.v.z = (m02 + m20) * num4
+            q.w = (m12 - m21) * num4
+            return q
+
+        if (m11 > m22):
+            num6 = np.sqrt(((1 + m11) - m00) - m22)
+            num3 = .5 / num6
+            q.v.x = (m10 + m01) * num3
+            q.v.y = .5 * num6
+            q.v.z = (m21 + m12) * num3
+            q.w = (m20 - m02) * num3
+            return q
+
+        num5 = np.sqrt(((1 + m22) - m00) - m11)
+        num2 = .5 / num5
+        q.v.x = (m20 + m02) * num2
+        q.v.y = (m21 + m12) * num2
+        q.v.z = .5 * num5
+        q.w = (m01 - m10) * num2
+        return q
+
+    def face(self, forward, up=Vector3(0, 0, 1)):
+        self.copy(Quaternion.facing(forward, up))
+
     def fromToRotation(startVector, endVector):
         if startVector == endVector:
             return Quaternion.zero
@@ -287,7 +344,7 @@ class Quaternion:
         self.v = value.v
 
     def __str__(self):
-        return "Quaternion(w = " + str(self.w) + ", x = " + str(self.x) + ", y = " + str(self.y) + ", z = " + str(self.z) + ")"
+        return "Quaternion(w = " + str(self.w) + ", x = " + str(self.v.x) + ", y = " + str(self.v.y) + ", z = " + str(self.v.z) + ")"
 
 
 Quaternion.zero = Quaternion(1, Vector3())

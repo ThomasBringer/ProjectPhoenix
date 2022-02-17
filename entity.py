@@ -4,6 +4,7 @@ from unit import *
 from camera import *
 from bezier3 import*
 from track import *
+from trackIntegrator import TrackIntegrator
 from trackMesh import *
 from trackBody import *
 from meshRenderer import *

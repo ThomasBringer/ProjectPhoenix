@@ -12,7 +12,7 @@ from vectorRenderer import *
 
 class Camera(Unit):
 
-    def __init__(self, res=Vector2(1920, 1080), perspective=True, persScaler=.975, orthoSize=2, segs=True, tris=True, backgroundColor=Color.black):
+    def __init__(self, res=Vector2(1920, 1080), perspective=True, persScaler=.975, orthoSize=2, segs=True, tris=True, backgroundColor=Color.white):
         self.res = res
         self.perspective = perspective
         self.persScaler = persScaler
@@ -60,12 +60,12 @@ class Camera(Unit):
             if self.tris:
                 for tri in meshRenderer.mesh.tris:
                     self.drawTri([preRenderedPoints[tri[k]].toTuple()
-                                  for k in range(3)])
+                                  for k in range(3)], meshRenderer.triColor)
 
             if self.segs:
                 for seg in meshRenderer.mesh.segs:
                     self.drawSeg([preRenderedPoints[seg[k]]
-                                  for k in range(2)])
+                                  for k in range(2)], meshRenderer.segColor)
 
         # print(PosRotScale3.relativePos(
         #     Vector3(0, 0, 5), self.transform.globalPosRotScale3))

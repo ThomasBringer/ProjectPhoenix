@@ -27,6 +27,7 @@ def main():
 
     # print(Track01.units[0])
     # print(Track01.units[0].points)
+
     # print(Track01.units[0].segs)
 
     # print("right", Cart.transform.localPosRotScale3.rotation.localRight, "forward",
@@ -125,15 +126,36 @@ def inputUpdate():
                     stateITRS = 0
             if event.key == pg.K_KP5:
                 Camera.Main.perspective = not Camera.Main.perspective
-            if event.key == pg.K_KP8:
-                Transform3Master.Master.localPosRotScale3.rotation.localUp = -Vector3.forward
+
             if event.key == pg.K_KP1:
+                print(Transform3Master.Master.localPosRotScale3.rotation)
+
+            if event.key == pg.K_KP2:
                 Transform3Master.Master.localPosRotScale3.rotation = Quaternion(
-                    0.707107, Vector3(0, 0, 0.707107))
-            if event.key == pg.K_KP3:
-                Transform3Master.Master.localPosRotScale3.rotation.localForward = -Vector3.forward
-            if event.key == pg.K_KP7:
-                Transform3Master.Master.localPosRotScale3.rotation.localUp = -Vector3.forward
+                    0.92388, Vector3(0.382683, 0, 0))
+
+            # if event.key == pg.K_KP1:
+            #     Transform3Master.Master.localPosRotScale3.rotation.face(
+            #         Vector3(0, 1, 0))
+            # if event.key == pg.K_KP3:
+            #     Transform3Master.Master.localPosRotScale3.rotation.face(
+            #         Vector3(-1, 0, 0))
+            # if event.key == pg.K_KP7:
+            #     Transform3Master.Master.localPosRotScale3.rotation.face(
+            #         Vector3(0, -1, 0))
+            # if event.key == pg.K_KP9:
+            #     Transform3Master.Master.localPosRotScale3.rotation.face(
+            #         Vector3(1, 0, 0))
+
+            # if event.key == pg.K_KP8:
+            #     Transform3Master.Master.localPosRotScale3.rotation.localUp = -Vector3.forward
+            # if event.key == pg.K_KP1:
+            #     Transform3Master.Master.localPosRotScale3.rotation = Quaternion(
+            #         0.707107, Vector3(0, 0, 0.707107))
+            # if event.key == pg.K_KP3:
+            #     Transform3Master.Master.localPosRotScale3.rotation.localForward = -Vector3.forward
+            # if event.key == pg.K_KP7:
+            #     Transform3Master.Master.localPosRotScale3.rotation.localUp = -Vector3.forward
 
     leftClick, middleClick, rightClick = pg.mouse.get_pressed()
     mouseDeltaPos = Vector2(pg.mouse.get_rel()) * .005

@@ -1,3 +1,4 @@
+from numpy.core.arrayprint import _get_format_function
 from clock import *
 from physics import *
 from unit import *
@@ -9,18 +10,24 @@ from space import *
 
 import matplotlib.pyplot as plt
 
+from function3 import *
+
 
 class TrackBody(UpdatableUnit):
 
-    def __init__(self, track, speedVectorRenderer, accelerationVectorRenderer, gForceVectorRenderer):
+    # , speedVectorRenderer, accelerationVectorRenderer, gForceVectorRenderer):
+    def __init__(self, track, accelerationVectorRenderer, trackPos):
         self.track = track
-        self.speedVectorRenderer = speedVectorRenderer
+        # self.speedVectorRenderer = speedVectorRenderer
         self.accelerationVectorRenderer = accelerationVectorRenderer
-        self.gForceVectorRenderer = gForceVectorRenderer
+        # self.gForceVectorRenderer = gForceVectorRenderer
+        self.trackPos = trackPos
         self.d = 0
         self.heightVar = 0
-        self.lastSpeedVector = Vector3.forward * .0001
+        self.lastSpeedVector = Vector3.forward * 25  # .0001
         self.originalHeight = track.start.z
+        self.t = 0
+        self.ts = []
         self.speeds = []
         self.accelerations = []
         self.gForces = []
@@ -44,31 +51,53 @@ class TrackBody(UpdatableUnit):
         return 0 if s == 0 else Vector3.distance(a, c)/(2*s)
         # return 2*(Vector3).sinAngleBetween(a-b, c-b)/Vector3.distance(a, c)
 
-    # def mengerCurvature(self, a, b, c):
-    #     r = self.mengerRadius(a, b, c)
-    #     return np.infty if r == 0 else 1/r
+    # Uses deivatives ton compute the curvature radius. r = |f'|**3/|f' ^ f''|
+    def derivativeRadius(self, t):
+        der1 = Function3.CircleLoopDer1
+        der2 = Function3.CircleLoopDer2
+        der1t = der1.evaluate(t)
+        der2t = der2.evaluate(t)
+        return ((der1t.module)**3)/((Vector3.cross(der1t, der2t)).module)
+        # def mengerCurvature(self, a, b, c):
+        #     r = self.mengerRadius(a, b, c)
+        #     return np.infty if r == 0 else 1/r
 
     def update(self):
         a = self.getPos(self.D - 1)
         b = self.getPos(self.D)
         c = self.getPos(self.D + 1)
-        dt = deltaTime()
 
-        dir = (c - b).normalized
-        tang = (a+c-b*2).normalized
+        dt = deltaTime()
+        tang = (c - a).normalized
+        normal = (a+c-b*2).normalized
+
+        if self.D <= 7:
+            normal = Vector3(0, 0, 1)
+
+        # # print("normal", normal)
+        # # or ((normal.normalized-Vector3(x=-0.9998901017408137, y=0.014821386790648846, z=0.00033306808186257407)).sqrModule < .1 and not done):
+        # if normal.sqrModule < .006 or self.D <= 7 or 80 <= self.D:
+        #     normal = Vector3(0, 0, 1)
+        #     # if((normal.normalized-Vector3(x=-0.9998901017408137, y=0.014821386790648846, z=0.00033306808186257407)).sqrModule < .01):
+        #     #     done = True
+        # else:
+        #     normal = normal.normalized
+
         # print("dir", dir)
 
         sqrSpeed = self.calcSqrSpeed()
         speed = np.sqrt(sqrSpeed)
-        speedVector = dir*speed
-        self.speedVectorRenderer.vector = speedVector
+        speedVector = tang*speed
+        # self.speedVectorRenderer.vector = speedVector
 
         dist = speed * dt
 
         # # # # # acceleration = (speed - self.lastSpeed) / self.lastDeltaTime
 
         # a=v²/r
+
         r = self.mengerRadius(a, b, c)
+        # r = self.mengerRadius(a, b, c)
         # print("r", r)
         # print("tang", tang)
         if r == 0:
@@ -77,24 +106,26 @@ class TrackBody(UpdatableUnit):
             acceleration = sqrSpeed/r
 
         # acceleration = 0 if r == 0 else sqrSpeed*self.mengerCurvature(a, b, c)
-        accelerationVector = tang * acceleration
+        accelerationVector = normal * acceleration
         # accelerationVector = (speedVector-self.lastSpeedVector)
 
         self.accelerationVectorRenderer.vector = accelerationVector
-        gForce = gVect-accelerationVector
-        self.gForceVectorRenderer.vector = gForce
+        gForce = Vector3.up+accelerationVector/g
+        # self.gForceVectorRenderer.vector = gForce
 
         # print("gForce:", gVect-accelerationVector)
         # print("gForceVector:", self.gForceVectorRenderer.vector)
 
         # acceleration = accelerationVector.module
 
+        self.ts.append(self.t)
+        self.t += dt
         self.speeds.append(speed)
         self.accelerations.append(acceleration)
         self.gForces.append(gForce.module)
         self.lastDeltaTime = dt
 
-        self.heightVar = dir.z * dist
+        self.heightVar = tang.z * dist
         self.lastSpeedVector = speedVector
 
         self.D += dist
@@ -103,7 +134,11 @@ class TrackBody(UpdatableUnit):
         # print("heightVar", self.heightVar, "speed", speed, "dist", dist)
         # print("dist:", dist)
 
-        self.transform.localPosRotScale3.rotation.localForward = dir
+        self.transform.localPosRotScale3.rotation.face(tang, normal)
+
+        print()
+
+        # self.transform.localPosRotScale3.rotation.localForward = tang
 
     @ property
     def D(self):
@@ -121,16 +156,30 @@ class TrackBody(UpdatableUnit):
         return self.track.FakeCurve(d)
 
     def applyPos(self, d):
-        self.transform.localPosRotScale3.position = self.getPos(d)
+        self.transform.localPosRotScale3.position = self.getPos(
+            d) + self.trackPos
 
     def tryTerminate(self, dValue):
         if dValue >= self.track.maxDist:
             self.terminate()
 
     def terminate(self):
-        ts = np.linspace(0, 1, len(self.speeds))
-        plt.plot(ts, self.speeds)
-        plt.plot(ts, self.accelerations)
-        plt.plot(ts, self.gForces)
+        self.ts.pop()
+        self.ts.pop()
+        self.ts.pop(0)
+        self.ts.pop(0)
+        self.gForces.pop()
+        self.gForces.pop()
+        self.gForces.pop(0)
+        self.gForces.pop(0)
+
+        # ts = np.linspace(0, 1, len(self.gForces))
+        # plt.plot(ts, self.speeds)
+        # plt.plot(ts, self.accelerations)
+
+        plt.plot(self.ts, self.gForces)
+        plt.xlabel("temps (secondes)")
+        plt.ylabel("G-force (g)")
+        plt.ylim([0, 8])
         plt.show()
         exit()

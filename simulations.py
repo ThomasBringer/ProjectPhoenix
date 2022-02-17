@@ -11,25 +11,25 @@ def SimulationCube():
 
 
 def SimulationCoaster(track):
-    Ground = Entity(Transform3(PosRotScale3(Vector3(0, 0, -5))),
-                    [MeshRenderer(Mesh.Ground)])
+    Ground = Entity(Transform3(PosRotScale3(Vector3(0, 0, -10))),
+                    [MeshRenderer(Mesh.Ground, Color.green, Color.darkGreen)])
     Ground.transform.localPosRotScale3.scale = Vector3.one * 10
-    speedVectorRenderer = VectorRenderer()
-    accelerationVectorRenderer = VectorRenderer(Color.orange, .5)
-    gForceVectorRenderer = VectorRenderer(Color.red, .5)
+    # speedVectorRenderer = VectorRenderer()
+    accelerationVectorRenderer = VectorRenderer(Color.blue, .1)
+    # gForceVectorRenderer = VectorRenderer(Color.red, 2)
+    trackPos = Vector3(0, 0, -10)
+
     Track01 = Entity(Transform3(PosRotScale3(
-        Vector3(0, 0, 0), Quaternion(), Vector3(1, 1, 1)), [], Transform3Master.Master), [MeshRenderer(TrackMesh(track))])
+        trackPos, Quaternion(), Vector3(1, 1, 1)), [], Transform3Master.Master), [MeshRenderer(TrackMesh(track))])
     Cart = Entity(
-        Transform3(PosRotScale3(track.start, Quaternion(),
+        Transform3(PosRotScale3(trackPos+track.start, Quaternion(),
                                 Vector3(1, 1, 1)), [], Transform3Master.Master),
-        [MeshRenderer(Mesh.Cart), TrackBody(track, speedVectorRenderer, accelerationVectorRenderer, gForceVectorRenderer),
-         speedVectorRenderer, accelerationVectorRenderer, gForceVectorRenderer])
+        [MeshRenderer(Mesh.Cart, Color.red, Color.orange), TrackBody(track, accelerationVectorRenderer, trackPos), accelerationVectorRenderer])
     selectedEntity = Cart
     #Transform3Master.Master.localPosRotScale3.position.z = -25
 
 
 MainCamera = Entity(Transform3(PosRotScale3(Vector3(0, 0, 0))), [Camera.Main])
 selectedEntity = MainCamera
-SimulationCoaster(Bezier3.DropRoundLoop)
-
-# print("Vector Renderers:", VectorRenderers)
+SimulationCoaster(TrackIntegrator.ConstantG)
+# SimulationCoaster(Track.CircleLoop)
