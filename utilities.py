@@ -1,3 +1,5 @@
+# Utility functions.
+
 from copy import deepcopy as copy
 
 

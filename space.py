@@ -1,15 +1,16 @@
+# A script containing several useful classes for 3D.
+
 import numpy as np
-# from numpy.core.numeric import cross
+
 from utilities import *
+
+# A Vector is representend as a list of float coordinates.
 
 
 class Vector(object):
 
     def __init__(self, c=[0, 0]):
         self.c = c
-
-    # @property
-    # def dim(self): return len(self.c)
 
     @property
     def x(self): return self.c[0]
@@ -29,22 +30,6 @@ class Vector(object):
     @z.setter
     def z(self, value): self.c[2] = value
 
-    # def __add__(a, b): return Vector(sumByTerm([a.c, b.c]))
-    # def __neg__(a): return Vector(multTerms(-1, a.c))
-    # def __sub__(a, b): return a + -b
-
-    # def __mul__(a, b):
-    #     if isinstance(b, Vector):
-    #         return Vector(multByTerm([a.c, b.c]))
-    #     elif isinstance(b, int) or isinstance(b, float):
-    #         return Vector(multTerms(b, a.c))
-
-    # def __truediv__(a, b):
-    #     if isinstance(b, Vector):
-    #         return Vector(multByTerm([a.c, invTerms(b.c)]))
-    #     elif isinstance(b, int) or isinstance(b, float):
-    #         return Vector(multTerms(1 / b, a.c))
-
     def __eq__(a, b):
         return a.c == b.c
 
@@ -62,9 +47,6 @@ class Vector(object):
     def distance(a, b):
         return (a-b).module
 
-    # def distance(a, b):
-    #     return module(a-b)
-
     @property
     def normalized(a):
         m = a.module
@@ -72,12 +54,10 @@ class Vector(object):
 
     @property
     def toVector2(a):
-        # return Vector([a.x, a.y])
         return Vector2(a.x, a.y)
 
     @property
     def toVector3(a):
-        # return Vector([a.x, a.y, 0])
         return Vector3(a.x, a.y, 0)
 
     def toTuple(self):
@@ -87,6 +67,7 @@ class Vector(object):
         return "Vector of coordinates(" + str([str(k) for k in self.c]) + ")"
 
 
+# A Vector2 is a 2-dimensional Vector.
 class Vector2(Vector):
 
     def __init__(self, x=0, y=0):
@@ -94,9 +75,6 @@ class Vector2(Vector):
             self.c = x
         else:
             self.c = [x, y]
-
-    # def __init__(self, c=[0, 0]):
-    #     self.c = c
 
     def __add__(a, b): return Vector2(a.x + b.x, a.y + b.y)
     def __neg__(a): return Vector2(-a.x, -a.y)
@@ -125,6 +103,8 @@ Vector2.forward = Vector2(0, 1)
 Vector2.left = Vector2(-1, 0)
 Vector2.back = Vector2(0, -1)
 
+# A Vector3 is a 3-dimensional Vector.
+
 
 class Vector3(Vector):
 
@@ -133,12 +113,6 @@ class Vector3(Vector):
             self.c = x
         else:
             self.c = [x, y, z]
-
-    # def __init__(self, x=0, y=0, z=0):
-    #     self.c = [x, y, z]
-
-    # def __init__(self, c=[0, 0, 0]):
-    #     self.c = c
 
     def __add__(a, b): return Vector3(a.x + b.x, a.y + b.y, a.z + b.z)
     def __neg__(a): return Vector3(-a.x, -a.y, -a.z)
@@ -156,21 +130,17 @@ class Vector3(Vector):
         elif isinstance(b, int) or isinstance(b, float):
             return a * (1 / b)
 
+    # Dot product.
     def dot(a, b):
         return a.x * b.x + a.y * b.y + a.z * b.z
 
+    # Cross product.
     def cross(a, b):
         return Vector3(a.y * b.z - a.z * b.y,
                        a.z * b.x - a.x * b.z,
                        a.x * b.y - a.y * b.x)
 
     def sinAngleBetween(a, b):
-        # print("sinanglebetween", "a", a, "b", b)
-        # print("normalized", a.normalized, b.normalized)
-        # print("cross", Vector3.cross(a.normalized,
-        #                              b.normalized))
-        # print("cross module / sin", Vector3.cross(a.normalized,
-        #                                           b.normalized).module)
         return Vector3.cross(a.normalized,
                              b.normalized).module
 
@@ -191,16 +161,18 @@ Vector3.left = Vector3(-1, 0, 0)
 Vector3.back = Vector3(0, -1, 0)
 Vector3.down = Vector3(0, 0, -1)
 
+# A Quaternion is a 4D number system, extending the complex number system.
+# It is an efficient and compact way to compute 3D rotations.
+
 
 class Quaternion:
 
     def __init__(self, w=1, v=Vector3()):
-        self.w = w
-        self.v = v
+        self.w = w  # scalar part
+        self.v = v  # vector part
 
+    # Converts euler angles represented in a Vector3 to a rotation represented in a quaternion
     def eulerToQuaternion(euler):
-        # print(euler)
-        # print(euler.x, euler.y, euler.z)
         return Quaternion.angleAxis(euler.z, Vector3.up) * Quaternion.angleAxis(euler.y, Vector3.forward) * Quaternion.angleAxis(euler.x, Vector3.right)
 
     @ property
@@ -219,36 +191,33 @@ class Quaternion:
     def normalized(a):
         return a / a.module
 
-    # def inverse(a):
-    #     return a.conjugate/a.sqrModule
-
     def __mul__(a, b):
-        # if isinstance(a, Vector3):
-        #     return Quaternion(0, a) * b
         if isinstance(b, Quaternion):
             return Quaternion(a.w * b.w - Vector3.dot(a.v, b.v), b.v * a.w + a.v * b.w + Vector3.cross(a.v, b.v))
-        # elif isinstance(b,Vector3):
-        #     return a*Quaternion(0,b)
         elif isinstance(b, complex):
             return Quaternion(a.w * b, a.v * b)
 
     def __truediv__(a, b: complex):
         return Quaternion(a.w / b, a.v / b)
 
-    def compose(a, b):  # = bab-1
+    # Computes b.a.b^-1.
+    def compose(a, b):
         return b * (a * b.conjugate)
 
+    # Computes the position of a Vector3 point rotated by a Quaternion rotation.
     def rotatedPoint(rotation, point):
         return Quaternion.compose(point.toQuaternion, rotation).v
-        # return Quaternion.compose(Quaternion(0, point), rotation).v
 
+    # Provides a Quaternion representing a rotation of a float angle around a Vector3 axis. (Theorem of equ)
     def angleAxis(angle, axis):
         semiAngle = angle * .5
         return Quaternion(np.cos(semiAngle), axis.normalized * np.sin(semiAngle))
 
+    # Composes rotation, returning a composition of rotations.
     def rotated(self, b):
         return b * self
 
+    # Represents the right direction of the object. Can be set to modify the rotation.
     @ property
     def localRight(self): return self.rotatedPoint(Vector3.right)
 
@@ -256,6 +225,7 @@ class Quaternion:
     def localRight(self, value):
         self.copy(Quaternion.fromToRotation(Vector3.right, value))
 
+    # Represents the forward direction of the object. Can be set to modify the rotation.
     @ property
     def localForward(self): return self.rotatedPoint(Vector3.forward)
 
@@ -263,6 +233,7 @@ class Quaternion:
     def localForward(self, value):
         self.copy(Quaternion.fromToRotation(Vector3.forward, value))
 
+    # Represents the up direction of the object. Can be set to modify the rotation.
     @ property
     def localUp(self): return self.rotatedPoint(Vector3.up)
 
@@ -270,9 +241,13 @@ class Quaternion:
     def localUp(self, value):
         self.copy(Quaternion.fromToRotation(Vector3.up, value))
 
-    # def complexRep(a):
-    #     return Matrix2x2.U*a.w + Matrix2x2.I*a.x + Matrix2x2.J*a.y + Matrix2x2.K*a.z
+    # Computes a Quaternion representing a rotation going from directions startVector to endVector.
+    def fromToRotation(startVector, endVector):
+        if startVector == endVector:
+            return Quaternion.zero
+        return Quaternion(np.sqrt(startVector.sqrModule * endVector.sqrModule) + startVector.dot(endVector), startVector.cross(endVector)).normalized
 
+    # Computes a Quaternion rotation with specified forward and up directions, using rotation matrices.
     def facing(forward, up):
 
         up = up.normalized
@@ -329,11 +304,6 @@ class Quaternion:
 
     def face(self, forward, up=Vector3(0, 0, 1)):
         self.copy(Quaternion.facing(forward, up))
-
-    def fromToRotation(startVector, endVector):
-        if startVector == endVector:
-            return Quaternion.zero
-        return Quaternion(np.sqrt(startVector.sqrModule * endVector.sqrModule) + startVector.dot(endVector), startVector.cross(endVector)).normalized
 
     def copy(self, rot):
         self.w = rot.w

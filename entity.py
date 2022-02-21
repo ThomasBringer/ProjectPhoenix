@@ -1,3 +1,9 @@
+# An Entity is an object that represent any actor in the project.
+# Entities can represent physical objects in the scene (a roller coaster cart) or non-physical ones (a virtual camera).
+# Entities do not have any functionality attached by default.
+# Instead, Entities can be given functionality through Units, which provides them with specific behaviours.
+# An Entity must have a Transform3 Unit attached, which means that an entity must be placed in the scene.
+
 from transform3 import *
 from mesh import *
 from unit import *

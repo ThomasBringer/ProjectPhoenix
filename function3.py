@@ -1,5 +1,6 @@
-import numpy as np
+# Functions that take one float parameter t and return a Vector3.
 
+import numpy as np
 from space import Vector3
 
 
@@ -11,9 +12,7 @@ class Function3:
         self.tEnd = tEnd
 
     def evaluate(self, t):
-        # print("ev", t)
         if(t <= self.tStart):
-            # print("returned", self.start)
             return self.start
         elif(self.tEnd <= t):
             return self.end
@@ -29,24 +28,17 @@ class Function3:
 
 R = 10
 
-# Function3.CircleLoop = Function3(
-#     (lambda t:
-#      Vector3(
-#          (np.sin(t/(2*np.pi)))*R if (-np.pi <= t <= np.pi) else t,
-#          3*np.tanh(t),
-#          (1+np.sin(t/(2*np.pi)))*R if (-np.pi <= t <= np.pi) else 0)),
-#     -25, 25)
-
+# Function3 representing a perfect cicular loop for a roller coaster layout.
 Function3.CircleLoop = Function3(
     (lambda t:
      Vector3(
          (-np.sin(t))*R if (-np.pi <= t <=
                             np.pi) else (t+np.pi if (t <= 0) else t-np.pi),
          2*np.tanh(t),
-         # if (-np.pi <= t <= np.pi) else (2 * np.tanh(-np.pi) if (t <= 0) else 2*np.tanh(np.pi)),
          (1+np.cos(t))*R if (-np.pi <= t <= np.pi) else 0)),
     -25, 25)
 
+# Unused. First derivative of the circle loop.
 Function3.CircleLoopDer1 = Function3(
     (lambda t:
      Vector3(
@@ -55,6 +47,7 @@ Function3.CircleLoopDer1 = Function3(
          (-np.sin(t))*R if (-np.pi <= t <= np.pi) else 0)),
     -25, 25)
 
+# Unused. Second derivate of the circle loop.
 Function3.CircleLoopDer2 = Function3(
     (lambda t:
      Vector3(
@@ -63,11 +56,5 @@ Function3.CircleLoopDer2 = Function3(
          (-np.cos(t))*R if (-np.pi <= t <= np.pi) else 0)),
     -25, 25)
 
+# Straight line Function3.
 Function3.Line = Function3((lambda t: Vector3(t, 0, 0)), -10, 10)
-
-# # Function3.CircleLoop = Function3(
-# #     Vector3(
-# #         (lambda t: (np.sin(t/(2*np.pi)))*R if (-np.pi <= t <= np.pi) else t),
-# #         (lambda t: 3*np.tanh(t)),
-# #         (lambda t: (1+np.sin(t/(2*np.pi)))*R if (-np.pi <= t <= np.pi) else 0)),
-# #     -3, 3)

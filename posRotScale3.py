@@ -1,3 +1,9 @@
+# A PosRotScale3 is an association of:
+# - a Vector3, which represents a local 3D position;
+# - a Quaternion, which represents a local 3D rotation;
+# - a Vector3, which represents a local 3D scale.
+# PosRotScale3s are efficient ways to represent 3D transformations of objects in the scene.
+
 from space import *
 from unit import *
 
@@ -9,9 +15,11 @@ class PosRotScale3:
         self.rotation = rotation
         self.scale = scale
 
+    # Computes the relative position to a parent PosRotScale3.
     def relativePos(pos, parentPosRotScale3):
         return parentPosRotScale3.rotation.rotatedPoint(pos * parentPosRotScale3.scale) + parentPosRotScale3.position
 
+    # Computes the relative PosRotScale to a parent PosRotScale3.
     def relative(localPosRotScale3, parentPosRotScale3):
         parentPos, parentRot, parentScale = parentPosRotScale3.position, parentPosRotScale3.rotation, parentPosRotScale3.scale
         pos, rot, scale = localPosRotScale3.position, localPosRotScale3.rotation, localPosRotScale3.scale
@@ -20,12 +28,15 @@ class PosRotScale3:
             rot.rotated(parentRot),
             parentScale * scale)
 
+    # Applies a translation.
     def translate(self, pos):
         self.position += pos
 
+    # Applies a rotation.
     def rotate(self, rot):
         self.rotation = self.rotation.rotated(rot)
 
+    # Applies a scale.
     def scalate(self, scale):
         self.scale *= scale
 

@@ -1,3 +1,10 @@
+# Main script. Main update & input management.
+# Commands:
+# Mouse buttons or alt to orbit the view.
+# Mouse wheel to zoom in and out.
+# P to start and pause the simulation.
+# Numpad 5 to switch between perspective and orthographic.
+
 import pygame as pg
 import sys
 import numpy as np
@@ -7,15 +14,16 @@ from color import *
 from simulations import *
 from matrix2x2 import *
 from mesh import *
-# from segment2 import *
-# from segment3 import *
+
 from transform3 import *
 from unit import *
 from space import *
 from clock import *
 from physics import *
 
-stateITRS = 0  # 0: idle, 1: translate, 2: rotate, 3: scalate
+# A state system for controlling objects.  0: idle, 1: translate, 2: rotate, 3: scalate.
+stateITRS = 0
+
 stateAxis = Vector3()
 
 
@@ -23,17 +31,6 @@ def main():
     pg.init()
     pg.display.set_caption("Project Phoenix")
 
-    # print(len(Meshes))
-
-    # print(Track01.units[0])
-    # print(Track01.units[0].points)
-
-    # print(Track01.units[0].segs)
-
-    # print("right", Cart.transform.localPosRotScale3.rotation.localRight, "forward",
-    #       Cart.transform.localPosRotScale3.rotation.localForward, "up", Cart.transform.localPosRotScale3.rotation.localUp)
-
-    # Cart.transform.localPosRotScale3.rotation.localForward = Vector3.up
     while True:
         mainUpdate()
 
@@ -65,8 +62,6 @@ def inputUpdate():
     global stateAxis
     global paused
 
-    # print(stateITRE, "//p", stateAxis)
-
     pressed = pg.key.get_pressed()
     alt = pressed[pg.K_LALT] or pressed[pg.K_RALT]
     shift = pressed[pg.K_RSHIFT] or pressed[pg.K_LSHIFT]
@@ -82,8 +77,7 @@ def inputUpdate():
                 stateAxis = Vector3()
             elif mouse == 4 or mouse == 5:
                 scroll = 1 if mouse == 4 else -1 if mouse == 5 else 0
-                # pressed = pg.key.get_pressed()
-                # shift = pressed[pg.K_RSHIFT] or pressed[pg.K_LSHIFT]
+
                 if shift:
                     if Camera.Main.perspective:
                         Camera.Main.persScaler -= scroll * .025
@@ -134,46 +128,13 @@ def inputUpdate():
                 Transform3Master.Master.localPosRotScale3.rotation = Quaternion(
                     0.92388, Vector3(0.382683, 0, 0))
 
-            # if event.key == pg.K_KP1:
-            #     Transform3Master.Master.localPosRotScale3.rotation.face(
-            #         Vector3(0, 1, 0))
-            # if event.key == pg.K_KP3:
-            #     Transform3Master.Master.localPosRotScale3.rotation.face(
-            #         Vector3(-1, 0, 0))
-            # if event.key == pg.K_KP7:
-            #     Transform3Master.Master.localPosRotScale3.rotation.face(
-            #         Vector3(0, -1, 0))
-            # if event.key == pg.K_KP9:
-            #     Transform3Master.Master.localPosRotScale3.rotation.face(
-            #         Vector3(1, 0, 0))
-
-            # if event.key == pg.K_KP8:
-            #     Transform3Master.Master.localPosRotScale3.rotation.localUp = -Vector3.forward
-            # if event.key == pg.K_KP1:
-            #     Transform3Master.Master.localPosRotScale3.rotation = Quaternion(
-            #         0.707107, Vector3(0, 0, 0.707107))
-            # if event.key == pg.K_KP3:
-            #     Transform3Master.Master.localPosRotScale3.rotation.localForward = -Vector3.forward
-            # if event.key == pg.K_KP7:
-            #     Transform3Master.Master.localPosRotScale3.rotation.localUp = -Vector3.forward
-
     leftClick, middleClick, rightClick = pg.mouse.get_pressed()
     mouseDeltaPos = Vector2(pg.mouse.get_rel()) * .005
 
-    if middleClick or alt:
+    if leftClick or middleClick or rightClick or alt:
 
         Transform3Master.Master.localPosRotScale3.rotate(Quaternion.eulerToQuaternion(
             Vector3.left * mouseDeltaPos.y * (0 if shift else 1) - Transform3Master.Master.localPosRotScale3.rotation.localUp * mouseDeltaPos.x * (0 if ctrl else 1)))
-
-        # print(Transform3Master.Master.localPosRotScale3.rotation.localUp)
-
-        # Transform3Master.Master.localPosRotScale3.rotate(Quaternion.eulerToQuaternion(
-        #     Vector3.left * mouseDeltaPos.y * (0 if shift else 1) + Vector3.forward * mouseDeltaPos.x * (0 if ctrl else 1)))
-
-#         Transform3Master.Master.localPosRotScale3.rotate(Quaternion.eulerToQuaternion(Vector3.left*mouseDeltaPos.y))
-# Transform3Master.Master.localPosRotScale3.rotate(Quaternion.eulerToQuaternion(
-#             Vector3(-mouseDeltaPos.y * (0 if shift else 1), mouseDeltaPos.x * (0 if ctrl else 1), 0)))
-
         return
 
     if stateITRS == 1:

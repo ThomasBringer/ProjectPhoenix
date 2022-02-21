@@ -1,5 +1,9 @@
+# 2x2 matrices managements.
+
 class Matrix2x2:
 
+    # (x y)
+    # (z t)
     def __init__(self, x=0, y=0, z=0, t=0):
         self.x = x
         self.y = y
@@ -17,6 +21,7 @@ class Matrix2x2:
         return "Matrix2x2("+str(self.x)+", "+str(self.y)+", "+str(self.z)+", "+str(self.t)+")"
 
 
+# Matrices for complex quaternion numbers.
 Matrix2x2.U = Matrix2x2(1, 0, 0, 1)
 Matrix2x2.I = Matrix2x2(1j, 0, 0, -1j)
 Matrix2x2.J = Matrix2x2(0, 1, -1, 0)

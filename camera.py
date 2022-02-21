@@ -1,3 +1,5 @@
+# A Camera is a Unit responsible for drawing objects on the canvas. A virtual camera that can attached to an Entity.
+
 import numpy as np
 import pygame as pg
 
@@ -30,6 +32,7 @@ class Camera(Unit):
         if 0 <= value <= 1:
             self._persScaler = value
 
+    # Size of the orthographic camera.
     @property
     def orthoSize(self): return self._orthoSize
 
@@ -47,87 +50,59 @@ class Camera(Unit):
     @property
     def renderSize(self): return self.orthoSize * self.res.y * .1
 
+    # Renders all objects on the canvas.
     def render(self):
         self.screen.fill(self.backgroundColor.toTuple())
 
-        # camPosRotScale3 = self.transform.localPosRotScale3
-        for meshRenderer in MeshRenderers:
+        for meshRenderer in MeshRenderers:  # Loop through mesh renderers:
 
+            # Projects point on the 2D canvas.
             preRenderedPoints = [self.preRender(
                 p) for p in meshRenderer.globalPoints()]
-            # preRenderedPoints = self.batchPreRender(meshRenderer.globalPoints())
 
+            # Renders all triangles.
             if self.tris:
                 for tri in meshRenderer.mesh.tris:
                     self.drawTri([preRenderedPoints[tri[k]].toTuple()
                                   for k in range(3)], meshRenderer.triColor)
 
+            # Renders all segments.
             if self.segs:
                 for seg in meshRenderer.mesh.segs:
                     self.drawSeg([preRenderedPoints[seg[k]]
                                   for k in range(2)], meshRenderer.segColor)
 
-        # print(PosRotScale3.relativePos(
-        #     Vector3(0, 0, 5), self.transform.globalPosRotScale3))
-
-        # self.drawSeg([self.preRender(Vector3(0, 0, 5)),
-        #               self.preRender(Vector3(0, 2, 5))], Color.magenta)
+        # Render all vector renderers.
         for vectorRenderer in VectorRenderers:
-            # print(vectorRenderer.vectorPoints[0])
-            # print(vectorRenderer.vectorPoints[1])
-            # print(vectorRenderer.vectorPoints[1] -
-            #       vectorRenderer.vectorPoints[0])
-
-            # print(PosRotScale3.relativePos(
-            #     vectorRenderer.vectorPoints[1], self.transform.globalPosRotScale3)-PosRotScale3.relativePos(
-            #     vectorRenderer.vectorPoints[0], self.transform.globalPosRotScale3))
-
-            # self.drawSeg(
-            #     [(self.centre + vectorRenderer.vectorPoints[0].toVector2 * (self.persScaler**(-vectorRenderer.vectorPoints[0].z) if self.perspective else 1) * self.renderSize), (self.centre + vectorRenderer.vectorPoints[1].toVector2 * (self.persScaler**(-vectorRenderer.vectorPoints[1].z) if self.perspective else 1) * self.renderSize)], vectorRenderer.color)
             self.drawSeg([self.preRender(vectorRenderer.vectorPoints[0]), self.preRender(
                 vectorRenderer.vectorPoints[1])], vectorRenderer.color)
-            # self.drawSeg([self.preRender(PosRotScale3.relativePos(
-            #     vectorRenderer.vectorPoints[0], Transform3Master.Master.globalPosRotScale3)), self.preRender(PosRotScale3.relativePos(
-            #         vectorRenderer.vectorPoints[1], Transform3Master.Master.globalPosRotScale3))], vectorRenderer.color)
 
+        # Renders the origin.
         origin = False
         if origin:
-            #     preRenderedPoints = self.batchPreRender(
-            #         [Vector3(0, 0, 0), Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, 1)])
-
             preRenderedPoints = [self.preRender(PosRotScale3.relativePos(axisPoint, Transform3Master.Master.localPosRotScale3)) for axisPoint in [
                 Vector3.zero, Vector3.right, Vector3.forward, Vector3.up]]
 
-            # preRenderedPoints = self.batchPreRender([PosRotScale3.relativePos(axisPoint, Transform3Master.Master.localPosRotScale3) for axisPoint in [Vector3.zero, Vector3.right, Vector3.forward, Vector3.up]])
             colors = [Color.red, Color.green, Color.blue]
-            # for k in preRenderedPoints:
-            #     print(k)
+
             for k in range(3):
                 self.drawSeg(
                     [preRenderedPoints[0], preRenderedPoints[k + 1]], colors[k])
 
         pg.display.update()
 
+    # Computes the projection of a 3D position onto the 2D canvas of the screen.
     def preRender(self, point):
         relativePoint = PosRotScale3.relativePos(
             point, self.transform.globalPosRotScale3)
-
-        # relativePoint = PosRotScale3.relative(
-        #     PosRotScale3(point), self.transform.globalPosRotScale3()).position
         return self.centre + relativePoint.toVector2 * (self.persScaler**(-relativePoint.z) if self.perspective else 1) * self.renderSize
-        # return self.centre + relativePoint.toVector2 * (np.exp(self.persScaler * relativePoint.z) if self.perspective else 1) * self.renderSize
 
-    # def batchPreRender(self, points):
-    #     preRenderedPoints = []
-    #     for point in points:
-    #         preRenderedPoints.append(self.preRender(point))
-    #     return preRenderedPoints
-
+    # Draws a segment on the canvas.
     def drawSeg(self, seg, color=Color.white): pg.draw.line(
         self.screen, color.toTuple(False), seg[0].toTuple(), seg[1].toTuple(), 5)
 
+    # Draws a triangle on the canvas.
     def drawTri(self, tri, color=Color.grey):
-        # print(tri)
         pg.draw.polygon(
             self.screen, color.toTuple(False), tri)
 

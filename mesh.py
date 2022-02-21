@@ -1,5 +1,10 @@
+# A Mesh is a way to represent 3D geometry.
+# Meshes are made of:
+# - a list of Vector3, which represents vertex positions;
+# - a list of lists of 2 integers, which represents the indices of the vertices for the start and the end of a segment;
+# - a list of lists of 3 integers, which represents the indices of the corners of a triangle.
+
 from transform3 import *
-# from segment3 import *
 from unit import *
 
 
@@ -13,14 +18,7 @@ class Mesh():
         return "Mesh made of " + str(len(self.points)) + " points, " + str(len(self.segs)) + " segments and " + str(len(self.tris)) + " triangles"
 
 
-# Mesh.Cube = Mesh([Vector3(1, -1, -1)*.5, Vector3(1, 1, -1)*.5,
-#                   Vector3(-1, -1, -1)*.5, Vector3(-1, 1, -1)*.5,
-#                   Vector3(1, -1, 1)*.5, Vector3(1, 1, 1)*.5,
-#                   Vector3(-1, -1, 1)*.5, Vector3(-1, 1, 1)*.5],
-#                  [[0, 1], [0, 2], [1, 3], [2, 3],
-#                   [0, 4], [1, 5], [2, 6], [3, 7],
-#                   [4, 5], [4, 6], [5, 7], [6, 7]])
-
+# A cube Mesh.
 Mesh.Cube = Mesh([Vector3(1, -1, -1) * .5, Vector3(1, 1, -1) * .5,
                   Vector3(-1, -1, -1) * .5, Vector3(-1, 1, -1) * .5,
                   Vector3(1, -1, 1) * .5, Vector3(1, 1, 1) * .5,
@@ -35,14 +33,15 @@ Mesh.Cube = Mesh([Vector3(1, -1, -1) * .5, Vector3(1, 1, -1) * .5,
                   [2, 3, 6], [3, 6, 7],
                   [4, 5, 6], [5, 6, 7]])
 
+# A pyramid Mesh.
 Mesh.Pyramid = Mesh([Vector3(1, -1, 0) * .5, Vector3(1, 1, 0) * .5,
                      Vector3(-1, -1, 0) * .5, Vector3(-1, 1, 0) * .5,
                      Vector3(0, 0, 1)],
                     [[0, 1], [0, 2], [1, 3], [2, 3],
-                     # [0, 3],
                      [0, 4], [1, 4], [2, 4], [3, 4]],
                     [[0, 1, 3], [0, 2, 3], [0, 1, 4], [0, 2, 4], [1, 3, 4], [2, 3, 4]])
 
+# A roller coaster cart Mesh.
 Mesh.Cart = Mesh([Vector3(0.587189, -1.5, 0.270633), Vector3(-0.587189, -1.5, 0.270633),
                   Vector3(0.587189, 1.5, 0.270633), Vector3(-0.587189,
                                                             1.5, 0.270633),
@@ -116,6 +115,7 @@ Mesh.Cart = Mesh([Vector3(0.587189, -1.5, 0.270633), Vector3(-0.587189, -1.5, 0.
                   [12, 13, 16], [13, 16, 17],
                   [14, 15, 16], [15, 16, 17]])
 
+# A flat plane Mesh.
 Mesh.Ground = Mesh([Vector3(-2, -2, 0), Vector3(-1, -2, 0), Vector3(0, -2, 0), Vector3(1, -2, 0), Vector3(2, -2, 0),
                     Vector3(-2, -1, 0), Vector3(2, -1, 0),
                     Vector3(-2, 0, 0), Vector3(2, 0, 0),
