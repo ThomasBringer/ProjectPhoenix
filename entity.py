@@ -8,7 +8,7 @@ from transform3 import *
 from mesh import *
 from unit import *
 from camera import *
-from bezier3 import*
+# from bezier3 import*
 from track import *
 from trackIntegrator import TrackIntegrator
 from trackMesh import *

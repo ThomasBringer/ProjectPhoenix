@@ -23,7 +23,12 @@ class TrackMesh(Mesh):
             tang = (c - a).normalized
             normal = (a+c-b*2).normalized
 
-            if i <= 7:
+            # # no upside down
+            # if normal.z <= 0:
+            #     normal = -normal
+
+            # For circular loop only
+            if i <= 31 or 126 < i:
                 normal = Vector3(0, 0, 1)
 
             lateral = (Vector3.cross(tang, normal)).normalized

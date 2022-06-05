@@ -14,7 +14,7 @@ from vectorRenderer import *
 
 class Camera(Unit):
 
-    def __init__(self, res=Vector2(1920, 1080), perspective=True, persScaler=.975, orthoSize=2, segs=True, tris=True, backgroundColor=Color.white):
+    def __init__(self, res=Vector2(1440, 1080), perspective=True, persScaler=.975, orthoSize=2, segs=True, tris=True, backgroundColor=Color.white):
         self.res = res
         self.perspective = perspective
         self.persScaler = persScaler

@@ -59,8 +59,9 @@ class TrackBody(UpdatableUnit):
         tang = (c - a).normalized  # Tangent direction.
         normal = (a+c-b*2).normalized  # Normal direction.
 
-        # Uses conservation energy to compute speed, depending on the variation of height. v²=v_0^2 - 2g deltaH
-        sqrSpeed = self.lastSpeedVector.sqrModule - 2 * g * self.heightVar
+        # Uses conservation energy to compute speed, depending on the variation of height. v²(t + dt) = v(t)^2 - 2g dh
+        sqrSpeed = self.lastSpeedVector.sqrModule - \
+            2 * g * self.heightVar  # (1 - fric*dt)*
 
         speed = np.sqrt(sqrSpeed)
         speedVector = tang*speed
@@ -92,10 +93,14 @@ class TrackBody(UpdatableUnit):
 
         self.D += dist
 
+        # # no upside down
+        # if normal.z <= 0:
+        #     normal = -normal
         # Updates rotation of the cart.
         self.transform.localPosRotScale3.rotation.face(tang, normal)
 
     # Curvilinear abscissa along the track.
+
     @ property
     def D(self):
         return self.d

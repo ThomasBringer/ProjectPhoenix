@@ -6,6 +6,16 @@ from entity import *
 # Sample simulation, with just a cube and a pyramid.
 
 
+def SimulationCart():
+    Cart = Entity(
+        Transform3(PosRotScale3(Vector3(0, 0, -1), Quaternion(),
+                                Vector3(1, 1, 1)), [], Transform3Master.Master),
+        [MeshRenderer(Mesh.Cart, Color.red, Color.orange)])
+    selectedEntity = Cart
+
+
+# Simulation with just cart
+
 def SimulationCube():
     boxTrans = Transform3(PosRotScale3(
         Vector3(0, 0, 0), Quaternion(), Vector3(1, 1, 1)), [], Transform3Master.Master)
@@ -33,8 +43,11 @@ def SimulationCoaster(track):
                                 Vector3(1, 1, 1)), [], Transform3Master.Master),
         [MeshRenderer(Mesh.Cart, Color.red, Color.orange), TrackBody(track, accelerationVectorRenderer, trackPos), accelerationVectorRenderer])
     selectedEntity = Cart
+    #Track01.transform.localPosRotScale3.scale.z = 2
 
 
 MainCamera = Entity(Transform3(PosRotScale3(Vector3(0, 0, 0))), [Camera.Main])
 selectedEntity = MainCamera
-SimulationCoaster(TrackIntegrator.TearLoop)
+
+# SimulationCart()
+SimulationCoaster(TrackIntegrator.TearLoop)  # Track.CircleLoop

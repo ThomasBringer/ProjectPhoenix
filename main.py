@@ -29,6 +29,7 @@ stateAxis = Vector3()
 
 def main():
     pg.init()
+    pg.display.set_mode((1440, 1080), pg.FULLSCREEN, 0)
     pg.display.set_caption("Project Phoenix")
 
     while True:
