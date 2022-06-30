@@ -193,6 +193,7 @@ class Quaternion:
 
     def __mul__(a, b):
         if isinstance(b, Quaternion):
+            # Hamilton product
             return Quaternion(a.w * b.w - Vector3.dot(a.v, b.v), b.v * a.w + a.v * b.w + Vector3.cross(a.v, b.v))
         elif isinstance(b, complex):
             return Quaternion(a.w * b, a.v * b)
@@ -208,7 +209,7 @@ class Quaternion:
     def rotatedPoint(rotation, point):
         return Quaternion.compose(point.toQuaternion, rotation).v
 
-    # Provides a Quaternion representing a rotation of a float angle around a Vector3 axis. (Theorem of equ)
+    # Provides a Quaternion representing a rotation of a float angle around a Vector3 axis.
     def angleAxis(angle, axis):
         semiAngle = angle * .5
         return Quaternion(np.cos(semiAngle), axis.normalized * np.sin(semiAngle))

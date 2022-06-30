@@ -37,24 +37,3 @@ Function3.CircleLoop = Function3(
          2*np.tanh(t),
          (1+np.cos(t))*R if (-np.pi <= t <= np.pi) else 0)),
     -25, 25)
-
-# Unused. First derivative of the circle loop.
-Function3.CircleLoopDer1 = Function3(
-    (lambda t:
-     Vector3(
-         (-np.cos(t))*R if (-np.pi <= t <= np.pi) else 1,
-         3/(np.cosh(t)**2),
-         (-np.sin(t))*R if (-np.pi <= t <= np.pi) else 0)),
-    -25, 25)
-
-# Unused. Second derivate of the circle loop.
-Function3.CircleLoopDer2 = Function3(
-    (lambda t:
-     Vector3(
-         (np.sin(t))*R if (-np.pi <= t <= np.pi) else 0,
-         3*(-2*np.sinh(t))/(np.cosh(t)**3),
-         (-np.cos(t))*R if (-np.pi <= t <= np.pi) else 0)),
-    -25, 25)
-
-# Straight line Function3.
-Function3.Line = Function3((lambda t: Vector3(t, 0, 0)), -10, 10)

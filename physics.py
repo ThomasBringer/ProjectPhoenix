@@ -2,9 +2,9 @@
 
 from space import Vector3
 
-g = 9.81*2
+g = 9.81
 
 gVect = Vector3.down*g
 
-# per-mass friction coefficient
-fric = .1
+# friction coefficient
+fric = .03

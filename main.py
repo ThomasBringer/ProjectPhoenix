@@ -12,7 +12,6 @@ import numpy as np
 from camera import *
 from color import *
 from simulations import *
-from matrix2x2 import *
 from mesh import *
 
 from transform3 import *
@@ -48,10 +47,14 @@ paused = True
 def mainUpdate():
     tick()
     if not paused:
-        for updatableUnit in UpdatableUnits:
-            updatableUnit.update()
+        behaviorUpdate()
     inputUpdate()
     Camera.Main.render()
+
+
+def behaviorUpdate():
+    for updatableUnit in UpdatableUnits:
+        updatableUnit.update()
 
 
 selectedPosRotScale = selectedEntity.transform.localPosRotScale3
@@ -90,6 +93,9 @@ def inputUpdate():
                 exit()
             if event.key == pg.K_p:
                 paused = not paused
+            if event.key == pg.K_o:
+                if paused:
+                    behaviorUpdate()
             if event.key == pg.K_RETURN or event.key == pg.K_TAB or event.key == pg.K_q or event.key == pg.K_z:
                 stateITRS = 0
                 stateAxis = Vector3()

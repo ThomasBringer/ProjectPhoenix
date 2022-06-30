@@ -21,14 +21,10 @@ class TrackMesh(Mesh):
             b = track.points[i+1]
             c = track.points[i+2]
             tang = (c - a).normalized
-            normal = (a+c-b*2).normalized
 
-            # # no upside down
-            # if normal.z <= 0:
-            #     normal = -normal
-
-            # For circular loop only
-            if i <= 31 or 126 < i:
+            if 15 <= i <= 102:
+                normal = (a+c-b*2).normalized  # Normal direction.
+            else:
                 normal = Vector3(0, 0, 1)
 
             lateral = (Vector3.cross(tang, normal)).normalized

@@ -32,20 +32,15 @@ class TrackBody(UpdatableUnit):
         self.accelerations = []
         self.gForces = []
         self.lastDeltaTime = deltaTime()
+        self.gForce = 0
+        self.distVar = 0
+
+        self.i = 0
 
     # Uses Menger curvature to compute the radius of a circle, using three points on the circle. r=2sin(abc)/|a-c|
-
     def mengerRadius(self, a, b, c):
         s = Vector3.sinAngleBetween(a-b, c-b)
         return 0 if s == 0 else Vector3.distance(a, c)/(2*s)
-
-    # Unused. Uses derivatives to compute the curvature radius. r = |f'|**3/|f' ^ f''|
-    def derivativeRadius(self, t):
-        der1 = Function3.CircleLoopDer1
-        der2 = Function3.CircleLoopDer2
-        der1t = der1.evaluate(t)
-        der2t = der2.evaluate(t)
-        return ((der1t.module)**3)/((Vector3.cross(der1t, der2t)).module)
 
     # Updates position to react to physics.
     def update(self):
@@ -57,16 +52,22 @@ class TrackBody(UpdatableUnit):
 
         dt = deltaTime()
         tang = (c - a).normalized  # Tangent direction.
-        normal = (a+c-b*2).normalized  # Normal direction.
+
+        if 13 <= self.i <= 102:
+            normal = (a+c-b*2).normalized  # Normal direction.
+        else:
+            normal = Vector3(0, 0, 1)
+
+        self.i += 1
 
         # Uses conservation energy to compute speed, depending on the variation of height. v²(t + dt) = v(t)^2 - 2g dh
-        sqrSpeed = self.lastSpeedVector.sqrModule - \
-            2 * g * self.heightVar  # (1 - fric*dt)*
+        sqrSpeed = self.lastSpeedVector.sqrModule - 2 * g * \
+            (self.heightVar + fric*self.distVar*self.gForce)
 
         speed = np.sqrt(sqrSpeed)
         speedVector = tang*speed
 
-        dist = speed * dt
+        self.distVar = speed * dt
 
         # Computes the curvature of the track to find normal acceleration.
         r = self.mengerRadius(a, b, c)
@@ -79,23 +80,21 @@ class TrackBody(UpdatableUnit):
         accelerationVector = normal * acceleration
 
         self.accelerationVectorRenderer.vector = accelerationVector
-        gForce = Vector3.up+accelerationVector/g
+        self.gForce = Vector3.dot(
+            Vector3.up + accelerationVector/g, self.transform.localPosRotScale3.rotation.localUp)
 
         self.ts.append(self.t)
         self.t += dt
         self.speeds.append(speed)
         self.accelerations.append(acceleration)
-        self.gForces.append(gForce.module)
+        self.gForces.append(self.gForce)
         self.lastDeltaTime = dt
 
-        self.heightVar = tang.z * dist
+        self.heightVar = tang.z * self.distVar
         self.lastSpeedVector = speedVector
 
-        self.D += dist
+        self.D += self.distVar
 
-        # # no upside down
-        # if normal.z <= 0:
-        #     normal = -normal
         # Updates rotation of the cart.
         self.transform.localPosRotScale3.rotation.face(tang, normal)
 
@@ -126,9 +125,12 @@ class TrackBody(UpdatableUnit):
 
     # Ends simulation and displays a graph of G-forces.
     def terminate(self):
+
         plt.plot(self.ts, self.gForces)
         plt.xlabel("temps (secondes)")
+
         plt.ylabel("G-force (g)")
         plt.ylim([0, 8])
+
         plt.show()
         exit()

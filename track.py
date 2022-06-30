@@ -93,4 +93,3 @@ class Track:
 
 
 Track.CircleLoop = Track(Function3.CircleLoop)
-Track.Line = Track(Function3.Line)
